@@ -1,28 +1,17 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Booking } from './booking.entity';
 
-@Entity({name: 'users'}) 
-export class UserEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    firstName : string;
+  @Column()
+  firstName: string;
 
-    @Column()
-    lastName : string;
+  @Column()
+  lastName: string;
 
-    @Column({unique:true})
-    email : string;
-
-    @Column({type:'bigint'})
-    mobile: number;
-
-    @Column()
-    password: string;
-
-    @CreateDateColumn()
-    createdDate: Date;
-  
-    @UpdateDateColumn()
-    updatedDate: Date;
+  @OneToMany(() => Booking, booking => booking.user)
+  bookings: Booking[];
 }
