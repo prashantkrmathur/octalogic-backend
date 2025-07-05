@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Vehicle } from './vehicle.entity';
-import { User } from './User.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Booking {
