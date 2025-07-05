@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
-  const allowedOrigins = ['https://ocatlogic-frontend.vercel.app/'];
+  const allowedOrigins = ['https://ocatlogic-frontend.vercel.app'];
   const app = await NestFactory.create(AppModule);
   
   app.enableCors({
