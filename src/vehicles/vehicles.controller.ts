@@ -12,7 +12,7 @@ import { Vehicle } from '../entities/vehicle.entity';
 import { VehicleCategory } from '../entities/vehicle_category.entity';
 import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { CreateBookingDto } from './dto/create-vehicle-booking.dto';
-import { User } from 'src/entities/user.entity';
+import { User } from '../entities/User.entity';
 
 
 @Controller('vehicles')
