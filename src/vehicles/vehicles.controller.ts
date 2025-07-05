@@ -1,34 +1,97 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { VehiclesService } from './vehicles.service';
-import { CreateVehicleDto } from './dto/create-vehicle.dto';
-import { UpdateVehicleDto } from './dto/update-vehicle.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Booking } from 'src/entities/booking.entity';
+import { User } from 'src/entities/user.entity';
+import { Vehicle } from 'src/entities/vehicle.entity';
+import { VehicleCategory } from 'src/entities/vehicle_category.entity';
+import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+import { CreateBookingDto } from './dto/create-vehicle-booking.dto';
+
 
 @Controller('vehicles')
-export class VehiclesController {
-  constructor(private readonly vehiclesService: VehiclesService) {}
+export class VehicleController {
+  constructor(
+    @InjectRepository(Vehicle)
+    private readonly vehicleRepo: Repository<Vehicle>,
 
-  @Post()
-  create(@Body() createVehicleDto: CreateVehicleDto) {
-    return this.vehiclesService.create(createVehicleDto);
-  }
+    @InjectRepository(Booking)
+    private readonly bookingRepo: Repository<Booking>,
+
+    @InjectRepository(VehicleCategory)
+    private readonly categoryRepo: Repository<VehicleCategory>,
+
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {}
 
   @Get()
-  findAll() {
-    return this.vehiclesService.findAll();
+  async getByWheelCount(@Query('wheelCount') wheelCount: string) {
+    const count = parseInt(wheelCount, 10);
+    if (![2, 4].includes(count)) {
+      throw new BadRequestException('Invalid wheelCount');
+    }
+
+    return await this.vehicleRepo.find({
+      where: { category: { wheelCount: count } },
+      relations: ['category'],
+    });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.vehiclesService.findOne(+id);
+  @Get('/categories')
+  async getCategories(@Query('wheelCount') wheelCount: string) {
+    const count = parseInt(wheelCount, 10);
+    if (![2, 4].includes(count)) {
+      throw new BadRequestException('Invalid wheelCount');
+    }
+
+    return await this.categoryRepo.find({ where: { wheelCount: count } });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVehicleDto: UpdateVehicleDto) {
-    return this.vehiclesService.update(+id, updateVehicleDto);
+  @Get('/models')
+  async getModels(@Query('categoryId') categoryId: string) {
+    return await this.vehicleRepo.find({
+      where: { category: { id: parseInt(categoryId) } },
+      relations: ['category'],
+    });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.vehiclesService.remove(+id);
+  @Post('booking')
+  async bookVehicle(@Body() body: CreateBookingDto) {
+    const { firstName, lastName, vehicleId, startDate, endDate } = body;
+
+    const vehicle = await this.vehicleRepo.findOne({ where: { id: vehicleId } });
+    if (!vehicle) throw new BadRequestException('Vehicle not found');
+
+    const overlap = await this.bookingRepo.findOne({
+      where: {
+        vehicle: { id: vehicleId },
+        startDate: LessThanOrEqual(endDate),
+        endDate: MoreThanOrEqual(startDate),
+      },
+    });
+
+    if (overlap) throw new BadRequestException('Booking dates conflict');
+
+    let user = await this.userRepo.findOne({ where: { firstName, lastName } });
+    if (!user) {
+      user = this.userRepo.create({ firstName, lastName });
+      await this.userRepo.save(user);
+    }
+
+    const booking = new Booking();
+    booking.user = user;
+    booking.vehicle = vehicle;
+    booking.startDate = new Date(startDate).toISOString();
+    booking.endDate = new Date(endDate).toISOString();
+    
+    await this.bookingRepo.save(booking);
+    return { message: 'Booking successful', bookingId: booking.id };
   }
 }

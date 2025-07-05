@@ -7,7 +7,7 @@ export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, user => user.bookings, { eager: true })
+  @ManyToOne(() => User, (user) => user.bookings)
   user: User;
 
   @ManyToOne(() => Vehicle, vehicle => vehicle.bookings, { eager: true })
