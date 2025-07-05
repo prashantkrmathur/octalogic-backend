@@ -2,8 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
-import * as crypto from 'crypto';
-(global as any).crypto = crypto;
 
 async function bootstrap() {
   const allowedOrigins = ['*'];
