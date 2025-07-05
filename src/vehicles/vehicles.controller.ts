@@ -7,10 +7,10 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Booking } from 'src/entities/booking.entity';
-import { User } from 'src/entities/user.entity';
-import { Vehicle } from 'src/entities/vehicle.entity';
-import { VehicleCategory } from 'src/entities/vehicle_category.entity';
+import { Booking } from '../entities/booking.entity';
+import { User } from '../entities/user.entity';
+import { Vehicle } from '../entities/vehicle.entity';
+import { VehicleCategory } from '../entities/vehicle_category.entity';
 import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { CreateBookingDto } from './dto/create-vehicle-booking.dto';
 

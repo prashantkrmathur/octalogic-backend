@@ -1,6 +1,6 @@
-import { connectionSource } from "src/config/typeorm.config";
-import { Vehicle } from "src/entities/vehicle.entity";
-import { VehicleCategory } from "src/entities/vehicle_category.entity";
+import { connectionSource } from "../../config/typeorm.config";
+import { Vehicle } from "../../entities/vehicle.entity";
+import { VehicleCategory } from "../../entities/vehicle_category.entity";
 
 
 async function seed() {
