@@ -88,9 +88,9 @@ export class VehicleController {
     const booking = new Booking();
     booking.user = user;
     booking.vehicle = vehicle;
-    booking.startDate = new Date(startDate).toISOString();
-    booking.endDate = new Date(endDate).toISOString();
-    
+    booking.startDate = new Date(startDate).toISOString().slice(0, 10);
+    booking.endDate = new Date(endDate).toISOString().slice(0, 10);
+
     await this.bookingRepo.save(booking);
     return { message: 'Booking successful', bookingId: booking.id };
   }
